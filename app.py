@@ -13,6 +13,7 @@ if not os.path.exists(DATA_FILE):
     with open(DATA_FILE, "w", encoding="utf-8") as f:
         json.dump([], f)
 
+# صفحة المستخدم
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
@@ -29,6 +30,7 @@ def index():
         return redirect("/")
     return render_template("index.html")
 
+# صفحة الادمن
 @app.route("/admin")
 def admin():
     with open(DATA_FILE, "r", encoding="utf-8") as f:
