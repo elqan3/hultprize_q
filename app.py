@@ -1,43 +1,55 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, request, redirect, url_for, render_template
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
 
 app = Flask(__name__)
 
-# إعداد قاعدة البيانات
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///questions.db'
+# =========================
+# PostgreSQL (Supabase)
+# =========================
+app.config['SQLALCHEMY_DATABASE_URI'] = (
+    "postgresql://postgres:189919442005elqantri@"
+    "db.xclxujpgynytqbxoueyl.supabase.co:5432/postgres"
+)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db = SQLAlchemy(app)
 
-# تعريف نموذج السؤال
+# =========================
+# Database Model
+# =========================
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    text = db.Column(db.Text, nullable=False)
-    date_submitted = db.Column(db.DateTime, default=datetime.utcnow)
+    content = db.Column(db.Text, nullable=False)
 
-    def __repr__(self):
-        return f'<Question {self.id}>'
+# =========================
+# Create Tables
+# =========================
+with app.app_context():
+    db.create_all()
 
-# صفحة المستخدم
+# =========================
+# Routes
+# =========================
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
-        question_text = request.form.get("question")
-        if question_text:
-            new_question = Question(text=question_text)
-            db.session.add(new_question)
+        content = request.form.get("content")
+        if content:
+            q = Question(content=content)
+            db.session.add(q)
             db.session.commit()
-        return redirect("/")
-    return render_template("index.html")
+        return redirect(url_for("index"))
 
-# صفحة الادمن
+    questions = Question.query.all()
+    return render_template("index.html", questions=questions)
+
 @app.route("/admin")
 def admin():
-    questions = Question.query.order_by(Question.date_submitted.desc()).all()
+    questions = Question.query.all()
     return render_template("admin.html", questions=questions)
 
+# =========================
+# Run App
+# =========================
 if __name__ == "__main__":
-    # إنشاء قاعدة البيانات إذا لم تكن موجودة
-    with app.app_context():
-        db.create_all()
     app.run(debug=True)
