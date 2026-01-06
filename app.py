@@ -6,11 +6,7 @@ app = Flask(__name__)
 # =========================
 # PostgreSQL (Supabase)
 # =========================
-app.config['SQLALCHEMY_DATABASE_URI'] = (
-    "postgresql+psycopg://postgres:189919442005elqantri@"
-    "db.xclxujpgynytqbxoueyl.supabase.co:5432/postgres"
-)
-
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://data_disk_user:4u1cdVwLGwFZ72iOjpYGGYqJhit8nRFa@dpg-d5e4hj0gjchc739h8log-a/data_disk'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -54,4 +50,5 @@ def admin():
 # =========================
 if __name__ == "__main__":
     app.run(debug=True)
+
 
